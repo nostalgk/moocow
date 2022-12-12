@@ -109,6 +109,7 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
         # For example, look at the two tests above. Can you work out the difference in the rolls?
 
         char = character()
+        char.strength = 16
         
         with patch('game.rules.EvAdventureRollEngine.roll_adv_disadv', return_value = 2):
             self.assertEqual(self.roll_engine.saving_throw(char, Ability.STR, 15), (True, None))
