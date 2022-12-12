@@ -1,0 +1,14 @@
+.vscode/*
+commands/__pycache__/*
+game/tests/__pycache__/*
+server/__pycache__/*
+server/conf/__pycache__/*
+server/logs/lockwarnings.log
+typeclasses/__pycache__/*
+web/__pycache__/*
+web/admin/__pycache__/*
+web/webclient/__pycache__/*
+web/website/__pycache__/*
+world/__pycache__/*
+*.pyc
+*.log
