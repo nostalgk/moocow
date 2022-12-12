@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Ability(Enum):
     """
     The six base ability-bonuses and other
