@@ -83,7 +83,7 @@ class EvAdventureRollEngine:
             quality = Ability.CRITICAL_FAILURE
         elif dice_roll == 20:
             quality = Ability.CRITICAL_SUCCESS
-        
+
         # figure out bonus
         bonus = getattr(character, throw_type.value, 1)
 
@@ -103,11 +103,12 @@ class EvAdventureRollEngine:
         defender_defense = getattr(defender, defense_type.value, 1) + 10
         result, quality = self.saving_throw(
             attacker,
-            bonus_type=attack_type,
+            throw_type=attack_type,
             target=defender_defense,
             advantage=advantage,
             disadvantage=disadvantage,
         )
+        
         return result, quality
 
     def morale_check(self, defender):
@@ -115,11 +116,11 @@ class EvAdventureRollEngine:
 
     def heal_from_rest(self, character):
         """
-        A night's rest retains 1d8 + CON HP
+        A night's rest retains 1d8 + END HP
 
         """
         end_bonus = getattr(character, Ability.END.value, 1)
-        character.heal(self.roll("1d8" + end_bonus))
+        return character.heal(self.roll("1d8") + end_bonus)
 
     def roll_random_table(self, dieroll, table_choices):
         """
