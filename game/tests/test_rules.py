@@ -106,12 +106,11 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
         )
 
     def test_pass_saving_throw_but_with_patch(self):
-        # I wanna try a patch this time. There are benefits to using patches.
-        # Patches stop mocked classes from staying instantiated, that is, their value is not reset.
-        # Patches clean themselves up after a test, unlike a mock.
-        # This is mostly important when overwriting functions, classes and modules, in a test.
-        # Instanced objects are fine to mock, but good to keep in mind.
-        # For example, look at the two tests above. Can you work out the difference in the rolls?
+        # i wanna try a patch this time. there are benefits to using patches.
+        # patches clean themselves up after a test, unlike a mock.
+        # this is mostly important when overwriting functions, classes and modules, in a test.
+        # instanced objects are fine to mock, but it's good to keep this in mind.
+        # for example, look at the two tests above. can you work out the difference in the rolls?
 
         char = character()
         char.strength = 16
@@ -129,7 +128,7 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
         # tuples are iterable, and thus usable as a side effect
         mock_saves.side_effect = {( True, None )}
         
-        # instantiate characters with different stats to pass or fail 
+        # instantiate two characters with different stats to oppose throws
         char1 = character()
         char1.strength = 16
         char2 = character()
@@ -180,7 +179,7 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
         
         table = [("1-5", "item" ),("6-10", "item2")]
         
-        # here, we're testing if using the wrong inputs raises a specific runtime error
+        # here, we're testing if using the wrong inputs raises a specific runtime error.
         # this is useful, because if a func has multiple runtime error possibilities,
         # we might end up with a runtime error we didn't expect to be testing for
         
@@ -190,3 +189,36 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
         self.assertTrue(
             str(err.exception).startswith("roll_random_table: Invalid die roll"), err.exception
         )
+    
+    @patch("game.rules.EvAdventureRollEngine.roll")
+    def test_death_roll(self, mocktail_roll):
+        # testing the power of a player to fucking die
+        mocktail_roll.side_effect = [2]
+        char = character()
+        
+        result = self.roll_engine.roll_death(char)
+        
+        # using str.startswith to compare the string without needing a big block
+        self.assertTrue(result.startswith("You fucking"))
+    
+    @patch("game.rules.EvAdventureRollEngine.roll")
+    def test_death_roll_attr(self, mocktail_roll):
+        # testing the function that removes player attributes for a death save
+        mocktail_roll.side_effect = [3, 2, 2]
+        char = character()
+        char.strength = 5
+
+        result = self.roll_engine.roll_death(char)
+
+        self.assertTrue(result.startswith("You survive"))
+        
+    @patch("game.rules.EvAdventureRollEngine.roll")
+    def test_death_roll_attr_fail(self, mocktail_roll):
+        # testing that if a character's tested attr is too low, they fucking die
+        mocktail_roll.side_effect = [3, 2]
+        char = character()
+        char.strength = -9
+
+        result = self.roll_engine.roll_death(char)
+
+        self.assertTrue(result.startswith("You almost"))

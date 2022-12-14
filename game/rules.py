@@ -156,11 +156,26 @@ class EvAdventureRollEngine:
             return table_choices[roll_result - 1]
 
     def roll_death(self, character):
+        """
+        Args:
+            character (Character): A character (assumed to have Ability bonuses
+            stored on itself as Attributes).
+             
+        Returns:
+            Any: A random result from the given list of choices from the death table.
+
+        Raises:
+            RuntimeError: If rolling dice giving results outside the table.
+
+        """
+        
         ability_name = self.roll_random_table("1d8", death_table)
 
         if ability_name == "dead":
             # kill the character
-            pass
+            message = "You fucking die."
+            character.msg(message)
+            return message
         else:
             loss = self.roll("1d4")
 
@@ -169,17 +184,19 @@ class EvAdventureRollEngine:
 
             if current_ability < -10:
                 # kill the character
+                message = "You almost made it... but you die anyway."
+                character.msg(message)
+                return message
                 pass
-
+            
             else:
                 # refresh 1d4 health, but suffer 1d4 ability loss
-                self.heal(character, self.roll("1d4"))
+                character.heal(self.roll("1d4"))
                 setattr(character, ability_name, current_ability)
-
-                character.msg(
-                    "You survive your brush with death, and while you recover "
-                    f"some health, you permanently lose {loss} {ability_name} instead."
-                )
+                message = ("You survive your brush with death, and while you recover "
+                f"some health, you permanently lose {loss} {ability_name} instead.")
+                character.msg(message)
+                return message
 
 
 dice = EvAdventureRollEngine()

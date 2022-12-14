@@ -8,5 +8,10 @@ class character:
         self.willpower = None
         
     def heal(self, num):
-        num = num
-        return num
+        heal = num
+        print("You are healed for " + str(num) + " damage")
+        return heal
+    
+    def msg(self, message):
+        print(message)
+        return
