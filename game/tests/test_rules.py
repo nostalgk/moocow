@@ -160,8 +160,8 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
         )
 
     @patch("game.rules.EvAdventureRollEngine.roll")
-    @patch("evennia.objects.objects.DefaultObject.msg")
-    def test_heal_from_rest(self, mocki_roll, mock_message):
+    @patch("evennia.objects.objects.DefaultCharacter.msg")
+    def test_heal_from_rest(self, mock_message, mocki_roll):
         # testing the heal logic
 
         mocki_roll.return_value = 3
@@ -169,10 +169,10 @@ class TestEvAdventureRuleEngine(BaseEvenniaTest):
         char = self.character
         char.endurance = 3
         char.hp_max = 14
+        
+        self.roll_engine.heal_from_rest(char)
 
-        #self.assertEqual(self.roll_engine.heal_from_rest(char), 6)
-        self.assertContains(mock_message, "You heal for 6 HP.")
-        self.assertContains(Msg.objects.search_message(char), "You heal for 6 HP.")
+        mock_message.assert_called_once_with("You heal for 6 HP.")
 
     @patch("game.rules.EvAdventureRollEngine.roll")
     def test_roll_random_table_items(self, mock_roll):

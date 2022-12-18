@@ -120,7 +120,6 @@ class EvAdventureRollEngine:
 
         """
         end_bonus = getattr(EvAdventureCharacter, Ability.END.value, 1)
-
         return EvAdventureCharacter.heal(self.roll("1d8") + end_bonus)
 
     def roll_random_table(self, dieroll, table_choices):

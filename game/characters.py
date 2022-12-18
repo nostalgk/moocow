@@ -19,31 +19,34 @@ class LivingMixin:
 
     def at_pay(self, amount):
         """When paying coins, make sure to never detract more than we have"""
+        amount = min(amount, self.coins)
+        self.coins -= amount
+        return amount
 
     def at_damage(self, damage, attacker=None):
         """Called when attacked and taking damage"""
         self.hp -= damage
 
-        def at_defeat(self):
-            """Called when defeated. By default this means death."""
-            self.at_death()
+    def at_defeat(self):
+        """Called when defeated. By default this means death."""
+        self.at_death()
 
-        def at_death(self):
-            """Called when this thing dies."""
-            # this will mean different things for different living things
-            pass
+    def at_death(self):
+        """Called when this thing dies."""
+        # this will mean different things for different living things
+        pass
 
-        def at_do_loot(self, looted):
-            """Called when looting another entity"""
-            looted.at_looted(self)
+    def at_do_loot(self, looted):
+        """Called when looting another entity"""
+        looted.at_looted(self)
 
-        def at_looted(self, looter):
-            """Called when looted by another entity"""
+    def at_looted(self, looter):
+        """Called when looted by another entity"""
 
-            # default to stealing some coins
-            max_steal = dice.roll("1d10")
-            stolen = self.at_pay(max_steal)
-            looter.coins += stolen
+        # default to stealing some coins
+        max_steal = dice.roll("1d10")
+        stolen = self.at_pay(max_steal)
+        looter.coins += stolen
 
 
 class EvAdventureCharacter(LivingMixin, DefaultCharacter):

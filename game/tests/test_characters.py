@@ -1,6 +1,5 @@
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest 
-
 from ..characters import EvAdventureCharacter 
 
 class TestCharacters(BaseEvenniaTest):
