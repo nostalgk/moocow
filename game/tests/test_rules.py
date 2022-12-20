@@ -1,16 +1,12 @@
-from unittest.mock import patch
-from unittest.mock import Mock
-from unittest.mock import MagicMock
-from evennia.utils.test_resources import BaseEvenniaTest
+from unittest.mock import patch, Mock
+from evennia.utils import create, test_resources
 from .. import rules
-from evennia import search_message, Msg
 from ..enums import Ability
-from evennia.utils import create
 from ..characters import EvAdventureCharacter
 
 # leaving out the morale check test because it's just a roll against a static value
 
-class TestEvAdventureRuleEngine(BaseEvenniaTest):
+class TestEvAdventureRuleEngine(test_resources.BaseEvenniaTest):
     def setUp(self):
         # called before every test method
         super().setUp()
