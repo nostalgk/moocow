@@ -26,4 +26,5 @@ class TestObjects(BaseEvenniaTest):
 
         self.assertTrue(result.startswith("testconsum"))
 
+
 # pretty much all these is here for now lol

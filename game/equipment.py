@@ -10,9 +10,9 @@ class EquipmentError(TypeError):
 
 
 class EquipmentHandler:
-    
-    # we're going to need to 
-    
+
+    # we're going to need to
+
     save_attribute = "inventory_slots"
 
     def __init__(self, obj):
@@ -48,10 +48,10 @@ class EquipmentHandler:
     def count_slots(self):
         """Count current slot usage"""
         slots = self.slots
-        backpack_item_sizes = [] 
-        for slot, slotobj in slots.items(): 
+        backpack_item_sizes = []
+        for slot, slotobj in slots.items():
             if slot is not WieldLocation.BACKPACK:
-                size = getattr(slotobj, "size", 0) 
+                size = getattr(slotobj, "size", 0)
                 backpack_item_sizes.append(size)
         wield_usage = sum(backpack_item_sizes)
         return wield_usage
@@ -81,7 +81,7 @@ class EquipmentHandler:
                 f"$pluralize(slot, {size}))."
             )
         return True
-    
+
     def display_slot_usage(self):
         """
         Get a slot usage/max string for display.
@@ -115,7 +115,7 @@ class EquipmentHandler:
             self._save()
         else:
             raise EquipmentError(f"There's nothing equipped in that slot.")
-            
+
         return ret
 
     def move(self, obj):
@@ -172,7 +172,7 @@ class EquipmentHandler:
             (slots[WieldLocation.HEAD], WieldLocation.HEAD),
         ] + [(item, WieldLocation.BACKPACK) for item in slots[WieldLocation.BACKPACK]]
         return inv
-    
+
     def inventory(self):
         """Returns a list of items in the inventory"""
         slots = self.slots
@@ -183,17 +183,17 @@ class EquipmentHandler:
             return "\n".join(readout)
         else:
             return "Yon backpack remain empty."
-    
+
     def identify_slot(self, obj):
         """Returns what slot an item is currently in"""
         slots = self.slots
         for slot, slotobj in slots.items():
             if slotobj == obj:
                 return slot
-    
+
     def identify_loadout(self):
         """This returns all equipped items and their slots, but not the inventory."""
-            
+
         slots = self.slots
         wielded = []
         for slot, slotobj in slots.items():
@@ -203,12 +203,11 @@ class EquipmentHandler:
             loadout = []
             for item in wielded:
                 # slot, item
-                loadout += (f"{item[1]} : {item[2]}\n")
+                loadout += f"{item[1]} : {item[2]}\n"
                 return loadout
         else:
             return f"You're not wearing anything. How embarrassing!"
-                
-        
+
     @property
     def armor(self):
         slots = self.slots
@@ -230,8 +229,8 @@ class EquipmentHandler:
             weapon = slots[WieldLocation.WEAPON_HAND]
         if not weapon:
             weapon = WeaponEmptyHand()
-        return weapon;    
-    
+        return weapon
+
     def get_wearable_objects_from_backpack(self):
         """
         Get all wearable items (armor or helmets) from backpack. This is useful in order to
@@ -248,7 +247,7 @@ class EquipmentHandler:
             for obj in self.slots[WieldLocation.BACKPACK]
             if obj.inventory_use_slot in (WieldLocation.BODY, WieldLocation.HEAD)
         ]
-        
+
     def get_wieldable_objects_from_backpack(self):
         """
         Get all wieldable weapons (or spell runes) from backpack. This is useful in order to
@@ -264,9 +263,13 @@ class EquipmentHandler:
             obj
             for obj in self.slots[WieldLocation.BACKPACK]
             if obj.inventory_use_slot
-            in (WieldLocation.WEAPON_HAND, WieldLocation.TWO_HANDS, WieldLocation.SHIELD_HAND)
+            in (
+                WieldLocation.WEAPON_HAND,
+                WieldLocation.TWO_HANDS,
+                WieldLocation.SHIELD_HAND,
+            )
         ]
-        
+
     def get_usable_objects_from_backpack(self):
         """
         Get all 'usable' items (like potions) from backpack. This is useful for getting a
@@ -277,4 +280,8 @@ class EquipmentHandler:
 
         """
         character = self.obj
-        return [obj for obj in self.slots[WieldLocation.BACKPACK] if obj.at_pre_use(character)]
+        return [
+            obj
+            for obj in self.slots[WieldLocation.BACKPACK]
+            if obj.at_pre_use(character)
+        ]
