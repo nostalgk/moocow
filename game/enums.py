@@ -31,7 +31,7 @@ class WieldLocation(Enum):
     BACKPACK = "backpack"
     WEAPON_HAND = "weapon_hand"
     SHIELD_HAND = "shield_hand"
-    TW0_HANDS = "two_handed_weapons"
+    TWO_HANDS = "two_handed_weapons"
     BODY = "body"  # armor
     HEAD = "head"  # helmets
 

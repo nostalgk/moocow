@@ -1,4 +1,6 @@
 from evennia import DefaultCharacter, AttributeProperty
+from evennia.utils.utils import lazy_property
+from .equipment import EquipmentHandler
 from .rules import dice
 
 
@@ -90,6 +92,24 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
             "$You() collapse in a heap, embraced by death.", from_obj=self
         )
         # TODO - go back into chargen to make a new character!
+    
+    @lazy_property
+    def equipment(self):
+        return EquipmentHandler(self)
+    
+    def at_pre_object_receive(self, moved_object, source_locatioon, **kwargs):
+        """Called by Evennia before object arrives 'in' this character (that is,
+        if they pick up something). If it returns False, move is aborted.
+        """
+        return self.equipment.validate_slot_usage(moved_object)
+    
+    def at_object_receive(self, moved_object, source_location, **kwargs):
+        """Called by Evennia when an object arrives 'in' the character."""
+        self.equipment.add(moved_object)
+        
+    def at_object_leave(self, moved_object, destination, **kwargs):
+        """Called by Evennia when object leaves the character."""
+        self.equipment.removed(moved_object)
 
 
 ### example of use
