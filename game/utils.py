@@ -28,10 +28,10 @@ def get_obj_stats(obj, owner=None):
         objmap = dict(owner.equipment.all())
         carried = objmap.get(obj)
         carried = f", Worn: [{carried.value}]" if carried else ""
-        
+
     attack_type = getattr(obj, "attack_type", None)
     defense_type = getattr(obj, "defend_type", None)
-    
+
     return _OBJ_STATS.format(
         key=obj.key,
         value=obj.value,
@@ -43,8 +43,5 @@ def get_obj_stats(obj, owner=None):
         uses=getattr(obj, "uses", "N/A"),
         attack_type_name=attack_type.value if attack_type else "No attack",
         defense_type_name=defense_type.value if defense_type else "No defense",
-        damage_roll=getattr(obj, "damage_roll", None)
+        damage_roll=getattr(obj, "damage_roll", None),
     )
-        
-
-    

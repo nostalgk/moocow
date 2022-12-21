@@ -67,9 +67,11 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     level = AttributeProperty(1)
     xp = AttributeProperty(0)
     coins = AttributeProperty(0)
-    
-    charclass = AttributeProperty("Fighter") # no classes in our game!
-    charrace = AttributeProperty("Human") # definitely needed for our game, default human
+
+    charclass = AttributeProperty("Fighter")  # no classes in our game!
+    charrace = AttributeProperty(
+        "Human"
+    )  # definitely needed for our game, default human
 
     def at_defeat(self):
         """Characters roll on death table"""
@@ -91,7 +93,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
 
 ### example of use
-#class Character(DefaultCharacter):
+# class Character(DefaultCharacter):
 #
 #    strength = AttributeProperty(10, category="stat")
 #    constitution = AttributeProperty(11, category="stat")
@@ -111,7 +113,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 #    char.attributes.get("agility", category="stat")  # returns 15
 #
 #    char.db.sleepy # returns None because autocreate=False (see below)
-#    
+#
 #    char.sleepy   # returns False, no db access
 #
 #    char.db.sleepy   # returns None - no Attribute exists

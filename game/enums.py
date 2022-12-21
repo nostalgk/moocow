@@ -25,17 +25,19 @@ class Ability(Enum):
     ALLEGIANCE_NEUTRAL = "neutral"
     ALLEGIANCE_FRIENDLY = "friendly"
 
+
 class WieldLocation(Enum):
-    
+
     BACKPACK = "backpack"
     WEAPON_HAND = "weapon_hand"
     SHIELD_HAND = "shield_hand"
     TW0_HANDS = "two_handed_weapons"
-    BODY = "body" # armor
-    HEAD = "head" # helmets
+    BODY = "body"  # armor
+    HEAD = "head"  # helmets
+
 
 class ObjType(Enum):
-    
+
     WEAPON = "weapon"
     ARMOR = "armor"
     SHIELD = "shield"

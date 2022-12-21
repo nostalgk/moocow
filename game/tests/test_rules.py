@@ -6,6 +6,7 @@ from ..characters import EvAdventureCharacter
 
 # leaving out the morale check test because it's just a roll against a static value
 
+
 class TestEvAdventureRuleEngine(test_resources.BaseEvenniaTest):
     def setUp(self):
         # called before every test method
@@ -68,7 +69,6 @@ class TestEvAdventureRuleEngine(test_resources.BaseEvenniaTest):
             self.roll_engine.roll_adv_disadv(adv, disadv),
             6,
         )
-
 
     def test_pass_saving_throw(self):
         # tests a saving throw that passes
@@ -165,7 +165,7 @@ class TestEvAdventureRuleEngine(test_resources.BaseEvenniaTest):
         char = self.character
         char.endurance = 3
         char.hp_max = 14
-        
+
         self.roll_engine.heal_from_rest(char)
 
         mock_message.assert_called_once_with("You heal for 6 HP.")

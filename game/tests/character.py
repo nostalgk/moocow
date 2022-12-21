@@ -1,4 +1,4 @@
-#class character:
+# class character:
 #    def __init__(self):
 #        self.strength = None
 #        self.dexterity = None
