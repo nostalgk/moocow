@@ -30,7 +30,7 @@ class LivingMixin:
         self.hp -= damage
 
     def at_defeat(self):
-        """Called when defeated. By default this means death."""
+        """Called when defeated. By default, this means death."""
         self.at_death()
 
     def at_death(self):
@@ -97,7 +97,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     def equipment(self):
         return EquipmentHandler(self)
 
-    def at_pre_object_receive(self, moved_object, source_locatioon, **kwargs):
+    def at_pre_object_receive(self, moved_object, source_location, **kwargs):
         """Called by Evennia before object arrives 'in' this character (that is,
         if they pick up something). If it returns False, move is aborted.
         """
@@ -112,7 +112,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         self.equipment.removed(moved_object)
 
 
-### example of use
+# example of use
 # class Character(DefaultCharacter):
 #
 #    strength = AttributeProperty(10, category="stat")

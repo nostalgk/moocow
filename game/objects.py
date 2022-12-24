@@ -107,7 +107,7 @@ class EvAdventureRuneStone(EvAdventureWeapon, EvAdventureConsumable):
     """Base for all magical rune stones"""
 
     obj_type = (ObjType.WEAPON, ObjType.MAGIC)
-    inventory_use_slot = WieldLocation.TW0_HANDS
+    inventory_use_slot = WieldLocation.TWO_HANDS
     quality = AttributeProperty(3, autocreate=False)
 
     attack_type = AttributeProperty(Ability.INT, autocreate=False)

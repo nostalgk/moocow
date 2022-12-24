@@ -43,7 +43,7 @@ class EquipmentHandler:
     @property
     def max_slots(self):
         """Max amount of slots, based on END defense (END + 10)"""
-        return getattr(self.obj, Ability.CON.value, 1) + 10
+        return getattr(self.obj, Ability.END.value, 1) + 10
 
     def count_slots(self):
         """Count current slot usage"""
@@ -96,6 +96,11 @@ class EquipmentHandler:
         """Put something in the backpack."""
         self.validate_slot_usage(obj)
         self.slots[WieldLocation.BACKPACK].append(obj)
+        self._save()
+
+    def drop(self, obj):
+        self.validate_slot_usage(obj)
+        self.slots[WieldLocation.BACKPACK].remove(obj)
         self._save()
 
     def remove(self, slot):
@@ -228,7 +233,7 @@ class EquipmentHandler:
         if not weapon:
             weapon = slots[WieldLocation.WEAPON_HAND]
         if not weapon:
-            weapon = WeaponEmptyHand()
+            return WeaponEmptyHand()
         return weapon
 
     def get_wearable_objects_from_backpack(self):
