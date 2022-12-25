@@ -137,4 +137,3 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
                 for x in [self.weapon, self.shield]
             )
         )
-        print(self.character.equipment.slots[WieldLocation.BACKPACK])
