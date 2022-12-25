@@ -55,13 +55,11 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
         self.assertEqual(self.character.equipment.count_slots(), 0)
 
         # with an item added (uses attr "size" that is not specified)
-        self.helmet.size = 1
         self.character.equipment.add(self.helmet)
         self.assertEqual(self.character.equipment.count_slots(), 1)
 
     def test_validate_slot_usage(self):
         # test that items are correctly evaluated in regard to their slot usage
-        self.helmet.size = 1
         self.assertTrue(self.character.equipment.validate_slot_usage(self.helmet))
 
         # fill slots
@@ -78,7 +76,6 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
         self.assertTrue(result.startswith("|b0/"))
 
         # test that a helmet size 1 will occupy a slot
-        self.helmet.size = 1
         self.character.equipment.add(self.helmet)
         result = self.character.equipment.display_slot_usage()
         self.assertTrue(result.startswith("|b1/"))
@@ -137,3 +134,71 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
                 for x in [self.weapon, self.shield]
             )
         )
+        # two handed weapon removed when equipping 1h
+        self.character.equipment.move(self.weapon)
+        self.assertFalse(self.character.equipment.slots[WieldLocation.TWO_HANDS])
+
+    def test_all(self):
+        # test getting all items in inventory
+        self.character.equipment.add(self.helmet)
+        self.character.equipment.move(self.helmet)
+        self.character.equipment.add(self.weapon)
+        self.character.equipment.add(self.shield)
+        result = self.character.equipment.all()
+        # make sure the head slot was included in the inventory with the right item
+        self.assertIn((self.helmet, WieldLocation.HEAD), result)
+        # something fun i wanted to add
+        # returns all items in a neat list that are in the backpack
+        self.assertTrue([item[0] for item in result if WieldLocation.BACKPACK in item], [self.weapon, self.shield])
+
+    def test_inventory_function(self):
+        # tests what returns from calling the inventory function
+        # test empty inventory
+        empty = self.character.equipment.inventory()
+        self.assertTrue(empty, "Yon backpack be empty.")
+
+        # test adding a couple items, with different sizes
+        self.helmet.size = 2
+        self.character.equipment.add(self.helmet)
+        self.character.equipment.add(self.weapon)
+        inv = self.character.equipment.inventory()
+        self.assertIn("helmet : 2 slots", inv)
+        self.assertIn("sord : 1 slots", inv)
+
+    def test_identify_slot(self):
+        # tests identifying slot item is in
+        self.character.equipment.add(self.helmet)
+        self.character.equipment.move(self.helmet)
+        self.assertTrue(self.character.equipment.identify_slot(self.helmet), WieldLocation.HEAD)
+
+    def test_identify_loadout(self):
+        # tests returning equipped items
+        # tests no equipment
+        res = self.character.equipment.identify_loadout()
+        self.assertTrue(res.startswith("You're not wearing anything"))
+
+        # tests one equipped item
+        self.character.equipment.add(self.helmet)
+        self.character.equipment.move(self.helmet)
+        ult = self.character.equipment.identify_loadout()
+        self.assertTrue(ult, "WieldLocation.HEAD : helmet")
+
+        # tests equipping multiple items and returning them all
+        self.character.equipment.add(self.weapon)
+        self.character.equipment.move(self.weapon)
+        result = self.character.equipment.identify_loadout()
+        self.assertTrue(result, """weapon hand : sord
+        head : helmet""")
+
+    def test_get_wearable_objects(self):
+        self.character.equipment.add(self.helmet)
+        self.character.equipment.add(self.helmet)
+        res = self.character.equipment.get_wearable_objects_from_backpack()
+        self.assertTrue(res, [self.helmet, self.helmet])
+
+    def test_get_wieldable_objects(self):
+        self.character.equipment.add(self.weapon)
+        self.character.equipment.add(self.shield)
+        res = self.character.equipment.get_wieldable_objects_from_backpack()
+        self.assertTrue(res, [self.weapon, self.shield])
+

@@ -11,7 +11,7 @@ class EquipmentError(TypeError):
 
 class EquipmentHandler:
 
-    # we're going to need to
+    # we're going to need to save
 
     save_attribute = "inventory_slots"
 
@@ -202,10 +202,10 @@ class EquipmentHandler:
         if slots[WieldLocation.BACKPACK]:
             readout = []
             for item in slots[WieldLocation.BACKPACK]:
-                readout += f"{item.key} : {item.size} slots"
-            return "\n".join(readout)
+                readout += f"{item.key} : {item.size} slots\n"
+            return "".join(readout)
         else:
-            return "Yon backpack remain empty."
+            return "Yon backpack be empty."
 
     def identify_slot(self, obj):
         """Returns what slot an item is currently in"""
@@ -221,13 +221,14 @@ class EquipmentHandler:
         wielded = []
         for slot, slotobj in slots.items():
             if slot != WieldLocation.BACKPACK:
-                wielded.append(slot, slotobj)
+                if slotobj:
+                    wielded.append((slot, slotobj))
         if wielded:
             loadout = []
             for item in wielded:
                 # slot, item
-                loadout += f"{item[1]} : {item[2]}\n"
-                return loadout
+                loadout += f"{item[0].value} : {item[1]}\n"
+            return "".join(loadout)
         else:
             return f"You're not wearing anything. How embarrassing!"
 

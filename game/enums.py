@@ -29,9 +29,9 @@ class Ability(Enum):
 class WieldLocation(Enum):
 
     BACKPACK = "backpack"
-    WEAPON_HAND = "weapon_hand"
-    SHIELD_HAND = "shield_hand"
-    TWO_HANDS = "two_handed_weapons"
+    WEAPON_HAND = "weapon hand"
+    SHIELD_HAND = "shield hand"
+    TWO_HANDS = "two-handed weapon"
     BODY = "body"  # armor
     HEAD = "head"  # helmets
 
