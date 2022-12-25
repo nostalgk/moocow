@@ -48,13 +48,18 @@ class EquipmentHandler:
     def count_slots(self):
         """Count current slot usage"""
         slots = self.slots
-        backpack_item_sizes = []
+        # get the size for each object if it's not in the backpack
+        wield_item_sizes = []
         for slot, slotobj in slots.items():
             if slot is not WieldLocation.BACKPACK:
                 size = getattr(slotobj, "size", 0)
-                backpack_item_sizes.append(size)
-        wield_usage = sum(backpack_item_sizes)
-        return wield_usage
+                wield_item_sizes.append(size)
+        wield_usage = sum(wield_item_sizes)
+        # get the size for each object in the backpack
+        backpack_usage = sum(
+            getattr(slotobj, "size", 0) for slotobj in slots[WieldLocation.BACKPACK]
+        )
+        return wield_usage + backpack_usage
 
     def validate_slot_usage(self, obj):
         """
@@ -99,7 +104,7 @@ class EquipmentHandler:
         self._save()
 
     def drop(self, obj):
-        self.validate_slot_usage(obj)
+        # Remove something from the backpack
         self.slots[WieldLocation.BACKPACK].remove(obj)
         self._save()
 
@@ -108,14 +113,8 @@ class EquipmentHandler:
         example `equipment.remove(WieldLocation.SHIELD_HAND)"""
         slots = self.slots
         ret = []
-        if slot is WieldLocation.BACKPACK:
-            # empty entire backpack
-            ret.extend(slots[slot])
-            slots[slot] = []
-        else:
-            ret.append(slots[slot])
-            slots[slot] = None
-
+        ret.append(slots[slot])
+        slots[slot] = None
         if ret:
             self._save()
         else:
@@ -123,47 +122,66 @@ class EquipmentHandler:
 
         return ret
 
+    def remove_all(self, slot):
+        """Remove all contents of a slot (dump backpack for example)"""
+        slots = self.slots
+        ret = []
+        ret.extend(slots[slot])
+        slots[slot] = []
+
+        if ret:
+            self._save()
+        else:
+            raise EquipmentError(f"You shake the container, and some dust floats out.")
+
+        return ret
+
     def move(self, obj):
         """Move object from backpack to its intended inventory_use_slot"""
 
         # make sure to remove from equipment/backpack first, to avoid double-adding
-        self.remove(obj)
+        self.drop(obj)
 
         slots = self.slots
         use_slot = getattr(obj, "inventory_use_slot", WieldLocation.BACKPACK)
 
         to_backpack = []
+        try:
+            if use_slot is WieldLocation.TWO_HANDS:
+                # TWO handed weapons can't be used with weapon/shield_hand objects
+                to_backpack = [
+                    slots[WieldLocation.WEAPON_HAND],
+                    slots[WieldLocation.SHIELD_HAND],
+                ]
+                slots[WieldLocation.WEAPON_HAND] = slots[
+                    WieldLocation.SHIELD_HAND
+                ] = None
+                slots[use_slot] = obj
 
-        if use_slot is WieldLocation.TWO_HANDS:
-            # TWO handed weapons can't be used with weapon/shield_hand objects
-            to_backpack = [
-                slots[WieldLocation.WEAPON_HAND],
-                slots[WieldLocation.SHIELD_HAND],
-            ]
-            slots[WieldLocation.WEAPON_HAND] = slots[WieldLocation.SHIELD_HAND] = None
-            slots[use_slot] = obj
+            elif use_slot in (WieldLocation.WEAPON_HAND, WieldLocation.SHIELD_HAND):
+                # can't keep a TWO handed weapon equipped if adding a 1h weapon or shield
+                to_backpack = [slots[WieldLocation.TWO_HANDS]]
+                slots[WieldLocation.TWO_HANDS] = None
+                slots[use_slot] = obj
 
-        elif use_slot in (WieldLocation.WEAPON_HAND, WieldLocation.SHIELD_HAND):
-            # can't keep a TWO handed weapon equipped if adding a 1h weapon or shield
-            to_backpack = [slots[WieldLocation.TWO_HANDS]]
-            slots[WieldLocation.TWO_HANDS] = None
-            slots[use_slot] = obj
+            elif use_slot is WieldLocation.BACKPACK:
+                # belongs in the backpack, so goes back to it
+                to_backpack = [obj]
 
-        elif use_slot is WieldLocation.BACKPACK:
-            # belongs in the backpack, so goes back to it
-            to_backpack = [obj]
+            else:
+                # replace whatever is in another equipment slot
+                to_backpack = [slots[use_slot]]
+                slots[use_slot] = obj
 
-        else:
-            # replace whatever is in another equipment slot
-            replaced = [obj]
-            slots[use_slot] = obj
+        except:
+            raise equipmentError(f"Ye cannot move to a slot. You have fucked up now")
 
         for to_backpack_obj in to_backpack:
             # put stuff in backpack
-            slots[use_slot].append(to_backpack_obj)
+            if to_backpack_obj:
+                slots[WieldLocation.BACKPACK].append(to_backpack_obj)
 
         # store new state
-
         self._save()
 
     def all(self):

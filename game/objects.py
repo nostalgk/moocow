@@ -48,6 +48,7 @@ class EvAdventureObject(DefaultObject):
         all_shields = search.search_object_by_tag(
             ObjType.SHIELD.value, category="obj_type"
         )
+        return all_shields
 
 
 class EvAdventureQuestObject(EvAdventureObject):
