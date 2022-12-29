@@ -174,7 +174,7 @@ class EquipmentHandler:
                 slots[use_slot] = obj
 
         except:
-            raise equipmentError(f"Ye cannot move to a slot. You have fucked up now")
+            raise EquipmentError(f"Ye cannot move to a slot. You have fucked up now")
 
         for to_backpack_obj in to_backpack:
             # put stuff in backpack

@@ -116,7 +116,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 # class Character(DefaultCharacter):
 #
 #    strength = AttributeProperty(10, category="stat")
-#    constitution = AttributeProperty(11, category="stat")
+#    endurance = AttributeProperty(11, category="stat")
 #    agility = AttributeProperty(12, category="stat")
 #    magic = AttributeProperty(13, category="stat")
 #
