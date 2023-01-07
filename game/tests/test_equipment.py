@@ -149,7 +149,10 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
         self.assertIn((self.helmet, WieldLocation.HEAD), result)
         # something fun i wanted to add
         # returns all items in a neat list that are in the backpack
-        self.assertTrue([item[0] for item in result if WieldLocation.BACKPACK in item], [self.weapon, self.shield])
+        self.assertTrue(
+            [item[0] for item in result if WieldLocation.BACKPACK in item],
+            [self.weapon, self.shield],
+        )
 
     def test_inventory_function(self):
         # tests what returns from calling the inventory function
@@ -169,7 +172,9 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
         # tests identifying slot item is in
         self.character.equipment.add(self.helmet)
         self.character.equipment.move(self.helmet)
-        self.assertTrue(self.character.equipment.identify_slot(self.helmet), WieldLocation.HEAD)
+        self.assertTrue(
+            self.character.equipment.identify_slot(self.helmet), WieldLocation.HEAD
+        )
 
     def test_identify_loadout(self):
         # tests returning equipped items
@@ -187,8 +192,11 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
         self.character.equipment.add(self.weapon)
         self.character.equipment.move(self.weapon)
         result = self.character.equipment.identify_loadout()
-        self.assertTrue(result, """weapon hand : sord
-        head : helmet""")
+        self.assertTrue(
+            result,
+            """weapon hand : sord
+        head : helmet""",
+        )
 
     def test_get_wearable_objects(self):
         self.character.equipment.add(self.helmet)
@@ -201,4 +209,3 @@ class TestEquipment(LivingMixin, BaseEvenniaTest):
         self.character.equipment.add(self.shield)
         res = self.character.equipment.get_wieldable_objects_from_backpack()
         self.assertTrue(res, [self.weapon, self.shield])
-

@@ -11,8 +11,8 @@ STR +{strength}
 DEX +{dexterity}
 END +{endurance}
 INT +{intelligence}
-WIS +{perception}
-CHA +{willpower}
+PER +{perception}
+WIL +{willpower}
 
 {description}
 
@@ -26,7 +26,7 @@ _ABILITIES = {
     "END": "endurance",
     "INT": "intellgence",
     "PER": "perception",
-    "WIL": "willpower"
+    "WIL": "willpower",
 }
 
 
@@ -143,71 +143,151 @@ class TemporaryCharacterSheet:
         if self.helmet:
             helmet = spawn(self.helmet)
             new_character.equipment.move(helmet)
-            
+
         for item in self.backpack:
             item = spawn(item)
             new_character.equipment.store(item)
-            
+
         return new_character
-    
-    def node_chargen(caller, raw_string, **kwargs):
-        
-        tmp_character = kwargs["tmp_character"]
-        
-        text = tmp_character.show_sheet()
-        
-        options = [
-            {
-                "desc" : "Change your name",
-                "goto" : ("node_change_name", kwargs)
-            }
-        ]
-        
-        if tmp_character.ability_changes <= 0:
-            options.append(
-                {
-                    "desc" : "Swap two of your ability scores (one time)",
-                    "goto": ("node_swap_abilities", kwargs)
-                },
-            )
+
+
+def node_chargen(caller, raw_string, **kwargs):
+
+    tmp_character = kwargs["tmp_character"]
+
+    text = tmp_character.show_sheet()
+
+    options = [{"desc": "Change your name", "goto": ("node_change_name", kwargs)}]
+
+    if tmp_character.ability_changes <= 0:
         options.append(
             {
-                "desc" : "Accept and create character",
-                "goto" : ("node_apply_character", kwargs)
+                "desc": "Swap two of your ability scores (one time)",
+                "goto": ("node_swap_abilities", kwargs),
             },
         )
-        
-        return text, options
-    
-    def _update_name(caller, raw_string, **kwargs):
-        """
-        Used by node_change_name below to check what user entered
-        and updates the name if appropriate
-        """
-        if raw_string:
-            tmp_character = kwargs["tmp_character"]
-            tmp_character.name = raw_string.lower().capitalize()
-            
-        return "node_chargen", kwargs
-    
-    def node_change_name(caller, raw_string, **kwargs):
-        """
-        Change the random name of the character.
-        """
-        tmp_character = kwargs["tmp_character"]
-        
-        text = (
-            f"Your current name is |w{tmp_character.name}|n. "
-        )
+    options.append(
+        {
+            "desc": "Accept and create character",
+            "goto": ("node_apply_character", kwargs),
+        },
+    )
 
-    def start_chargen(caller, session=None):
-        """
-        This is a start point for spinning up chargen from a command later
-        """
-        
-        menutree = {} # TODO
-        
-        # generate all random components of the character
-        tmp_character = TemporaryCharacterSheet()
-        
-        EvMenu(caller, menutree, session=session, tmp_character=tmp_character)
+    return text, options
+
+
+def _update_name(caller, raw_string, **kwargs):
+    """
+    Used by node_change_name below to check what user entered
+    and updates the name if appropriate
+    """
+    if raw_string:
+        tmp_character = kwargs["tmp_character"]
+        tmp_character.name = raw_string.lower().capitalize()
+
+    return "node_chargen", kwargs
+
+
+def node_change_name(caller, raw_string, **kwargs):
+    """
+    Change the random name of the character.
+    """
+    tmp_character = kwargs["tmp_character"]
+
+    text = (
+        f"Your current name is |w{tmp_character.name}|n. "
+        "Enter a new name or leave empty to abort."
+    )
+
+    options = {"key": "_default", "goto": ("_update_name", kwargs)}
+
+    return text, options
+
+
+def _swap_abilities(caller, raw_string, **kwargs):
+    """
+    Used by node_swap_abilities to parse the user's input and swap ability
+    values.
+
+    """
+    if raw_string:
+        abi1, *abi2 = raw_string.split(" ", 1)
+        if not abi2:
+            caller.msg("That doesn't look right.")
+            return None, kwargs
+
+        abi2 = abi2[0]
+        abi1, abi2 = abi1.upper().strip(), abi2.upper().strip()
+
+        if abi1 not in _ABILITIES or abi2 not in _ABILITIES:
+            caller.msg("Unrecognized set of abilities. Perhaps a typo?")
+            return None, kwargs
+
+        # if valid, swap values. we need to convert ability acronyms to full strings
+        # i.e. STR = strength
+        tmp_character = kwargs["tmp_character"]
+        abi1 = _ABILITIES[abi1]
+        abi2 = _ABILITIES[abi2]
+        abival1 = getattr(tmp_character, abi1)
+        abival2 = getattr(tmp_character, abi2)
+
+        setattr(tmp_character, abi1, abival2)
+        setattr(tmp_character, abi2, abival1)
+
+        tmp_character.ability_changes = +1
+
+    return "node_chargen", kwargs
+
+
+def node_swap_abilities(caller, raw_string, **kwargs):
+    """
+    One is allowed to swap the values of two abilities around, once
+    """
+
+    tmp_character = kwargs["tmp_character"]
+
+    text = f"""
+    Your current abilities:
+    
+    STR +{tmp_character.strength}
+    DEX +{tmp_character.dexterity}
+    END +{tmp_character.endurance}
+    INT +{tmp_character.intelligence}
+    PER +{tmp_character.perception}
+    WIL +{tmp_character.willpower}
+    
+    You can only swap the values of two abilities around, and
+    you can only do this once. Choose carefully!
+    
+    To swap the values of two stats, e.g. STR & INT, write |wSTR INT|n.
+    Leave empty to abort."""
+
+    options = {"key": "_default", "goto": ("swap_abilities", kwargs)}
+
+    return text, options
+
+
+def start_chargen(caller, session=None):
+    """
+    This is a start point for spinning up chargen from a command later
+    """
+
+    menutree = {"node_chargen": node_chargen}
+
+    # generate all random components of the character
+    tmp_character = TemporaryCharacterSheet()
+    EvMenu(caller, menutree, session=session, tmp_character=tmp_character)
+
+def node_apply_character(caller, raw_string, **kwargs):
+    """                              
+    End chargen and create the character. We will also puppet it.
+                                     
+    """                              
+    tmp_character = kwargs["tmp_character"]
+    new_character = tmp_character.apply(caller)      
+    
+    caller.account.db._playable_characters = [new_character] 
+    
+    text = "Character created!"
+    
+    return text, None 
