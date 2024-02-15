@@ -1,5 +1,5 @@
 # MooCOW
-Hello, and welcome to the development discord for the game, MooCOW (working title)
+Hello, and welcome to the development for the game, MooCOW (working title)
 
 > What is MooCOW?
 
@@ -17,7 +17,7 @@ A rich survival and simulation focused RPG, with titillating ASCII visuals and g
 
 > Sick. Hobo With a Shotgun is my favorite movie. How can I help?
 
-Check out our Github at [I'm a lazy piece of shit and haven't made a GitHub yet] and feel free to submit new issues or tackle them yourself to add to our game! MooCOW is an open source framework for creating RPG focused MUDs, and the hope is that with the features we create, you'll be able to import our work and create your own spin using the systems of this game.
+Check out our Github and feel free to submit new issues or tackle them yourself to add to our game! MooCOW is an open source framework for creating RPG focused MUDs, and the hope is that with the features we create, you'll be able to import our work and create your own spin using the systems of this game.
 
 > When will this be released?
 
