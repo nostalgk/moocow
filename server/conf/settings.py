@@ -33,6 +33,7 @@ from evennia.settings_default import *
 
 # This is the name of your game. Make it catchy!
 SERVERNAME = "mygame"
+AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
 
 
 ######################################################################

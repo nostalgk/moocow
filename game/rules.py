@@ -51,7 +51,7 @@ class EvAdventureRollEngine:
 
     def saving_throw(
         self,
-        character,
+        EvAdventureCharacter,
         throw_type,
         target,
         advantage=False,
@@ -61,12 +61,12 @@ class EvAdventureRollEngine:
         Do a saving throw, trying to beat a target.
 
         Args:
-           character (Character): A character (assumed to have Ability bonuses
+           EvAdventureCharacter (EvAdventureCharacter): A EvAdventureCharacter (assumed to have Ability bonuses
                stored on itself as Attributes).
            throw_type (Ability): A valid Ability bonus enum.
            target (int): The target number to beat.
-           advantage (bool): If character has advantage on this roll.
-           disadvantage (bool): If character has disadvantage on this roll.
+           advantage (bool): If EvAdventureCharacter has advantage on this roll.
+           disadvantage (bool): If EvAdventureCharacter has disadvantage on this roll.
 
         Returns:
             tuple: A tuple (bool, Ability), showing if the throw succeeded and
@@ -85,7 +85,7 @@ class EvAdventureRollEngine:
             quality = Ability.CRITICAL_SUCCESS
 
         # figure out bonus
-        bonus = getattr(character, throw_type.value, 1)
+        bonus = getattr(EvAdventureCharacter, throw_type.value, 1)
 
         # return a tuple (bool, quality)
         # bool true if roll+bonus exceeds target
@@ -108,19 +108,19 @@ class EvAdventureRollEngine:
             advantage=advantage,
             disadvantage=disadvantage,
         )
-        
+
         return result, quality
 
     def morale_check(self, defender):
         return self.roll("2d6") <= getattr(defender, "morale", 9)
 
-    def heal_from_rest(self, character):
+    def heal_from_rest(self, EvAdventureCharacter):
         """
         A night's rest retains 1d8 + END HP
 
         """
-        end_bonus = getattr(character, Ability.END.value, 1)
-        return character.heal(self.roll("1d8") + end_bonus)
+        end_bonus = getattr(EvAdventureCharacter, Ability.END.value, 1)
+        return EvAdventureCharacter.heal(self.roll("1d8") + end_bonus)
 
     def roll_random_table(self, dieroll, table_choices):
         """
@@ -155,12 +155,12 @@ class EvAdventureRollEngine:
             roll_result = max(1, min(len(table_choices), roll_result))
             return table_choices[roll_result - 1]
 
-    def roll_death(self, character):
+    def roll_death(self, EvAdventureCharacter):
         """
         Args:
-            character (Character): A character (assumed to have Ability bonuses
+            EvAdventureCharacter (EvAdventureCharacter): A EvAdventureCharacter (assumed to have Ability bonuses
             stored on itself as Attributes).
-             
+
         Returns:
             Any: A random result from the given list of choices from the death table.
 
@@ -168,34 +168,36 @@ class EvAdventureRollEngine:
             RuntimeError: If rolling dice giving results outside the table.
 
         """
-        
+
         ability_name = self.roll_random_table("1d8", death_table)
 
         if ability_name == "dead":
-            # kill the character
+            # kill the EvAdventureCharacter
             message = "You fucking die."
-            character.msg(message)
+            EvAdventureCharacter.msg(message)
             return message
         else:
             loss = self.roll("1d4")
 
-            current_ability = getattr(character, ability_name)
+            current_ability = getattr(EvAdventureCharacter, ability_name)
             current_ability -= loss
 
             if current_ability < -10:
-                # kill the character
+                # kill the EvAdventureCharacter
                 message = "You almost made it... but you die anyway."
-                character.msg(message)
+                EvAdventureCharacter.msg(message)
                 return message
                 pass
-            
+
             else:
                 # refresh 1d4 health, but suffer 1d4 ability loss
-                character.heal(self.roll("1d4"))
-                setattr(character, ability_name, current_ability)
-                message = ("You survive your brush with death, and while you recover "
-                f"some health, you permanently lose {loss} {ability_name} instead.")
-                character.msg(message)
+                EvAdventureCharacter.heal(self.roll("1d4"))
+                setattr(EvAdventureCharacter, ability_name, current_ability)
+                message = (
+                    "You survive your brush with death, and while you recover "
+                    f"some health, you permanently lose {loss} {ability_name} instead."
+                )
+                EvAdventureCharacter.msg(message)
                 return message
 
 

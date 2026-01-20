@@ -24,3 +24,26 @@ class Ability(Enum):
     ALLEGIANCE_HOSTILE = "hostile"
     ALLEGIANCE_NEUTRAL = "neutral"
     ALLEGIANCE_FRIENDLY = "friendly"
+
+
+class WieldLocation(Enum):
+
+    BACKPACK = "backpack"
+    WEAPON_HAND = "weapon hand"
+    SHIELD_HAND = "shield hand"
+    TWO_HANDS = "two-handed weapon"
+    BODY = "body"  # armor
+    HEAD = "head"  # helmets
+
+
+class ObjType(Enum):
+
+    WEAPON = "weapon"
+    ARMOR = "armor"
+    SHIELD = "shield"
+    HELMET = "helmet"
+    CONSUMABLE = "consumable"
+    GEAR = "gear"
+    MAGIC = "magic"
+    QUEST = "quest"
+    TREASURE = "treasure"
