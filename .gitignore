@@ -12,3 +12,4 @@ web/website/__pycache__/*
 world/__pycache__/*
 *.pyc
 *.log
+.venv
